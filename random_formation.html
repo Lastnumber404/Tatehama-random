@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>編成ランダム表示</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  h1 {
+    font-size: 1.4rem;
+    margin: 0 0 24px;
+    color: #333;
+  }
+  .result {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    margin: 20px 0;
+    color: #222;
+    font-weight: 500;
+  }
+  .result div {
+    margin: 8px 0;
+  }
+  button {
+    background: #007aff;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 28px;
+    font-size: 1.05rem;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+  }
+  button:active {
+    background: #005ecb;
+  }
+  .hint {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 16px;
+  }
+
+  .credit {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: #888;
+  }
+  .credit a {
+    color: #007aff;
+    text-decoration: none;
+  }
+  .credit a:active {
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>編成ランダム表示</h1>
+  <div class="result" id="result">
+    <div>タップして表示</div>
+  </div>
+  <button onclick="generate()">再抽選</button>
+  <div class="hint">タップまたはボタンで再抽選</div>
+  <div class="credit">
+    製作者: Lastnumber_404<br>
+    <a href="https://x.com/LastNumber_404" target="_blank" rel="noopener">@LastNumber_404</a>
+  </div>
+
+</div>
+
+<script>
+const units = [
+  { name: "5320", cars: 4 },
+  { name: "5300", cars: 4 },
+  { name: "5300", cars: 2 },
+  { name: "4300", cars: 4 },
+  { name: "4300", cars: 2 },
+  { name: "4321f", cars: 4 },
+  { name: "4000", cars: 6 },
+  { name: "4000R", cars: 6 },
+  { name: "3300", cars: 3 },
+  { name: "5600", cars: 2 },
+  { name: "4600", cars: 4 },
+  { name: "4600", cars: 2 },
+  { name: "3020", cars: 6 },
+  { name: "3000", cars: 6 },
+  { name: "50000", cars: 6 }
+];
+
+const weathers = [
+  "晴", "曇", "雨", "雪",
+  "晴れ&曇", "晴れ&雨", "晴れ&雪",
+  "曇&雨", "曇&雪"
+];
+
+const trains = [
+  "1103A",
+  "1104A",
+  "1140",
+  "1143",
+  "1145",
+  "1150",
+  "1166",
+  "1178",
+  "1178_新野崎",
+  "1206A",
+  "1212A",
+  "1215A",
+  "1242",
+  "1250",
+  "1251",
+  "1260",
+  "1261",
+  "1267",
+  "1282C",
+  "1283C",
+  "1284C",
+  "1285C",
+  "1305A",
+  "1325A",
+  "1348",
+  "1364",
+  "1367",
+  "1402A",
+  "1414A",
+  "1449",
+  "1461",
+  "1465",
+  "1466",
+  "1474",
+  "1482C",
+  "1483C",
+  "1484C",
+  "1485C",
+  "1498C",
+  "1499C",
+  "1541",
+  "1541_大道寺",
+  "1621A",
+  "1643",
+  "1643_大道寺",
+  "1649",
+  "1651",
+  "1651_大道寺",
+  "1664",
+  "1675",
+  "1690",
+  "1699C",
+  "1709A",
+  "1719A",
+  "1767",
+  "1774",
+  "1782C",
+  "1784C",
+  "1784C_大道寺",
+  "1787C",
+  "1791C",
+  "1791C_大道寺",
+  "1798C",
+  "1820A",
+  "1822A",
+  "1851",
+  "1860",
+  "1861",
+  "1865",
+  "1866",
+  "1869D",
+  "1873",
+  "1876",
+  "1878",
+  "1879",
+  "1880C",
+  "1881C",
+  "1883C",
+  "1886C",
+  "1890C",
+  "1894B",
+  "1894B_大道寺",
+  "1895B",
+  "1899C",
+  "1970",
+  "1987C",
+  "2060C",
+  "2071C",
+  "2071C_大道寺",
+  "2075",
+  "2076C",
+  "2078",
+  "2079",
+  "2084C",
+  "2087C",
+  "2090",
+  "2090_大道寺",
+  "2091C",
+  "2095C",
+  "2096",
+  "2112A",
+  "2174",
+  "2186C",
+  "2286C",
+  "2287",
+  "3473",
+  "3473_大道寺",
+  "3545B",
+  "3545B_大道寺",
+  "3555B",
+  "3567K",
+  "3643K",
+  "3654K",
+  "3741B",
+  "3744D",
+  "3744D_大道寺",
+  "3842B",
+  "3842B_大道寺",
+  "4677D",
+  "4677D_大道寺",
+  "4973D",
+  "5040D",
+  "5172",
+  "5272B",
+  "5273",
+  "560",
+  "567",
+  "568B",
+  "568B_大道寺",
+  "572",
+  "573",
+  "580C",
+  "580C_大道寺",
+  "581",
+  "581_浜園",
+  "585C",
+  "585C_大道寺",
+  "587C",
+  "591C",
+  "591C_大道寺",
+  "592C",
+  "592C_大道寺",
+  "592C_浜園",
+  "599",
+  "603A",
+  "604A",
+  "607A",
+  "610A",
+  "660",
+  "671",
+  "674",
+  "676",
+  "678B",
+  "678B_大道寺",
+  "681D",
+  "681D_大道寺",
+  "684CX",
+  "685C",
+  "698B",
+  "698B_大道寺",
+  "713A",
+  "766",
+  "767",
+  "770",
+  "771",
+  "777",
+  "782C",
+  "784C",
+  "785C",
+  "786",
+  "791C",
+  "796K",
+  "797B",
+  "799B",
+  "799B_大道寺",
+  "840",
+  "841",
+  "870",
+  "872",
+  "874",
+  "875C",
+  "890C",
+  "895C",
+  "895C_大道寺",
+  "898C",
+  "970",
+  "971",
+  "975",
+  "999C",
+  "回1076",
+  "回1094",
+  "回1107A",
+  "回1213A",
+  "回1220A",
+  "回1302A",
+  "回1408A",
+  "回1409A",
+  "回1415A",
+  "回1424A",
+  "回1640",
+  "回1702A",
+  "回1723A",
+  "回1742",
+  "回1750",
+  "回1750_大道寺",
+  "回1818A",
+  "回1820A",
+  "回1821A",
+  "回2122A",
+  "回3973",
+  "回469",
+  "回469_浜園",
+  "回505A",
+  "回561",
+  "回566",
+  "回586",
+  "回611A",
+  "回625A",
+  "回629A",
+  "回675",
+  "回679",
+  "回696",
+  "回862",
+];
+
+function getDirection(trainNo) {
+  // 回、アルファベット、_以降を除去して数字だけにする
+  let numStr = trainNo
+    .replace(/^回/, "")
+    .replace(/_[^_]*$/, "")
+    .replace(/[A-Z]+$/i, "");
+  let num = parseInt(numStr, 10);
+  if (isNaN(num)) return "下り";
+  return (num % 2 === 0) ? "上り" : "下り";
+}
+
+function generate() {
+  let formation = [];
+  let total = 0;
+  let remaining = 6;
+
+  while (total < 6) {
+    if (total >= 2 && Math.random() < 0.25) break;
+
+    let attempts = 0;
+    let selected = null;
+    while (attempts < 30) {
+      const u = units[Math.floor(Math.random() * units.length)];
+      if (u.cars <= remaining) {
+        selected = u;
+        break;
+      }
+      attempts++;
+    }
+    if (!selected) break;
+
+    formation.push(
+      selected.name === "4321f"
+        ? `4321f${selected.cars}両`
+        : `${selected.name}形${selected.cars}両`
+    );
+    total += selected.cars;
+    remaining -= selected.cars;
+  }
+
+  const weather = weathers[Math.floor(Math.random() * weathers.length)];
+  const train = trains[Math.floor(Math.random() * trains.length)];
+  const dir = getDirection(train);
+
+  document.getElementById("result").innerHTML = `
+    <div>列番:${train}(${dir})</div>
+    <div>編成:${formation.join("+")}</div>
+    <div>天候:${weather}</div>
+  `;
+}
+
+// 初回表示
+generate();
+</script>
+</body>
+</html>
