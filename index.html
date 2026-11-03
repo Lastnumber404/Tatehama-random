@@ -84,6 +84,23 @@
     height: auto;
     border-radius: 8px;
   }
+
+  .dia-link {
+    margin: 12px 0 8px;
+    font-size: 0.95rem;
+  }
+  .dia-link a {
+    color: #007aff;
+    text-decoration: none;
+  }
+  .dia-link a:active {
+    opacity: 0.7;
+  }
+  .fan-note {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: #888;
+  }
 </style>
 </head>
 <body>
@@ -99,6 +116,14 @@
     <a href="https://acty-soft.com/traincrew/" target="_blank" rel="noopener">
       <img src="traincrew_banner.png" alt="TRAIN CREW 公式サイト">
     </a>
+  </div>
+
+
+  <div class="dia-link">
+    <a href="https://lastnumber404.github.io/Tatehama-Dia/" target="_blank" rel="noopener">各駅時刻表はこちら</a>
+  </div>
+  <div class="fan-note">
+    ※このサイトは公式サイトではなく、ファンによる非公式サイトです
   </div>
 
   <div class="credit">
@@ -403,10 +428,13 @@ function generate() {
   const train = trains[Math.floor(Math.random() * trains.length)];
   const dir = getDirection(train);
 
+  const duty = Math.random() < 0.5 ? "車掌" : "運転";
+
   document.getElementById("result").innerHTML = `
     <div>列番:${train}(${dir})</div>
     <div>編成:${formation.join("+")}</div>
     <div>天候:${weather}</div>
+    <div>乗務内容:${duty}</div>
   `;
 }
 
