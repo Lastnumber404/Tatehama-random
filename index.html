@@ -10,73 +10,104 @@
 
 
 <style>
+  * { box-sizing: border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Noto Sans JP", sans-serif;
     background: #f0f2f5;
     margin: 0;
-    padding: 20px;
+    padding: 16px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
   }
   .card {
     background: white;
     border-radius: 16px;
-    padding: 32px 24px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 24px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     width: 100%;
-    max-width: 400px;
-    text-align: center;
+    max-width: 420px;
   }
   h1 {
-    font-size: 1.4rem;
-    margin: 0 0 24px;
-    color: #333;
+    font-size: 1.3rem;
+    margin: 0 0 20px;
+    color: #1a1a1a;
+    text-align: center;
+    font-weight: 600;
   }
   .result {
-    font-size: 1.15rem;
-    line-height: 1.8;
-    margin: 20px 0;
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 16px 0;
+    font-size: 1.05rem;
+    line-height: 1.7;
     color: #222;
-    font-weight: 500;
   }
   .result div {
-    margin: 8px 0;
+    margin: 6px 0;
+    padding: 2px 0;
+  }
+  .result div:first-child {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #007aff;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
   }
   button {
     background: #007aff;
     color: white;
     border: none;
     border-radius: 12px;
-    padding: 14px 28px;
+    padding: 14px 20px;
     font-size: 1.05rem;
+    font-weight: 500;
     cursor: pointer;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 8px;
   }
   button:active {
     background: #005ecb;
   }
   .hint {
-    font-size: 0.85rem;
-    color: #888;
-    margin-top: 16px;
-  }
-
-  .credit {
-    margin-top: 20px;
     font-size: 0.8rem;
     color: #888;
+    text-align: center;
+    margin-top: 12px;
   }
-  .credit a {
-    color: #007aff;
-    text-decoration: none;
+  .settings {
+    margin-top: 20px;
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
   }
-  .credit a:active {
-    opacity: 0.7;
+  .settings h3 {
+    margin: 0 0 12px;
+    font-size: 1rem;
+    text-align: center;
+    color: #333;
   }
-
+  .settings-group {
+    margin-bottom: 14px;
+  }
+  .settings-group:last-child {
+    margin-bottom: 0;
+  }
+  .settings label {
+    display: flex;
+    align-items: center;
+    margin: 6px 0;
+    cursor: pointer;
+  }
+  .settings input[type="checkbox"] {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
+  }
   .banner {
     margin: 16px 0 8px;
     text-align: center;
@@ -86,22 +117,25 @@
     height: auto;
     border-radius: 8px;
   }
-
   .dia-link {
-    margin: 12px 0 8px;
+    margin: 12px 0 6px;
+    text-align: center;
     font-size: 0.95rem;
   }
   .dia-link a {
     color: #007aff;
     text-decoration: none;
   }
-  .dia-link a:active {
-    opacity: 0.7;
+  .fan-note, .credit {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: #999;
+    text-align: center;
+    line-height: 1.5;
   }
-  .fan-note {
-    margin-top: 8px;
-    font-size: 0.8rem;
-    color: #888;
+  .credit a {
+    color: #007aff;
+    text-decoration: none;
   }
 </style>
 </head>
@@ -114,6 +148,36 @@
   <button onclick="generate()">再抽選</button>
   <div class="hint">タップまたはボタンで再抽選</div>
   
+
+  <div class="settings">
+    <h3>設定</h3>
+    <div class="settings-group">
+      <label><input type="checkbox" id="filterIrekae"> 入換ありの列車のみ</label>
+      <label><input type="checkbox" id="filterTaihi"> 退避ありの列車のみ</label>
+      <label><input type="checkbox" id="filterOneman"> ワンマン運転のみ</label>
+      <label><input type="checkbox" id="filterNext"> 次行路実装済みのみ（折返あり）</label>
+      <label><input type="checkbox" id="filterTypeChange"> 種別変更ありのみ</label>
+      <label><input type="checkbox" id="filterHamazono"> 浜園臨時停車ありのみ</label>
+    </div>
+    <div class="settings-group">
+      <strong>乗務内容</strong><br>
+      <label><input type="checkbox" id="filterDutyDriver" checked> 運転</label>
+      <label><input type="checkbox" id="filterDutyConductor" checked> 車掌</label>
+    </div>
+    <div class="settings-group">
+      <strong>種別フィルタ</strong><br>
+      <label><input type="checkbox" class="type-filter" value="普通" checked> 普通</label>
+      <label><input type="checkbox" class="type-filter" value="準急" checked> 準急</label>
+      <label><input type="checkbox" class="type-filter" value="急行" checked> 急行</label>
+      <label><input type="checkbox" class="type-filter" value="快急" checked> 快急</label>
+      <label><input type="checkbox" class="type-filter" value="区急" checked> 区急</label>
+      <label><input type="checkbox" class="type-filter" value="特急(B特)" checked> 特急(B特)</label>
+      <label><input type="checkbox" class="type-filter" value="特急(C特1)" checked> 特急(C特1)</label>
+      <label><input type="checkbox" class="type-filter" value="特急(C特2)" checked> 特急(C特2)</label>
+      <label><input type="checkbox" class="type-filter" value="回送" checked> 回送</label>
+    </div>
+  </div>
+
   <div class="banner">
     <a href="https://acty-soft.com/traincrew/" target="_blank" rel="noopener">
       <img src="traincrew_banner.png" alt="TRAIN CREW 公式サイト">
@@ -167,6 +231,7 @@ const trains = [
   "1145",
   "1150",
   "1166",
+  "1178",
   "1206A",
   "1212A",
   "1215A",
@@ -199,107 +264,73 @@ const trains = [
   "1498C",
   "1499C",
   "1541",
-  "1541_大道寺",
   "1643",
-  "1643_大道寺",
   "1649",
   "1651",
-  "1651_大道寺",
   "1664",
   "1675",
   "1690",
   "1699C",
-  "1767",
   "1774",
   "1782C",
-  "1784C",
-  "1784C_大道寺",
   "1787C",
-  "1791C",
-  "1791C_大道寺",
   "1798C",
-  "1851",
   "1860",
   "1861",
   "1865",
-  "1866",
   "1869D",
-  "1873",
-  "1876",
-  "1878",
-  "1879",
-  "1880C",
-  "1881C",
   "1883C",
-  "1886C",
   "1890C",
   "1894B",
-  "1894B_大道寺",
   "1895B",
-  "1899C",
-  "1970",
-  "1987C",
-  "2060C",
-  "2071C",
-  "2071C_大道寺",
   "2075",
   "2076C",
   "2078",
   "2079",
   "2084C",
   "2087C",
-  "2090",
-  "2090_大道寺",
   "2091C",
-  "2095C",
-  "2096",
   "2174",
   "2186C",
-  "2286C",
-  "2287",
+  "3473",
   "3545B",
-  "3545B_大道寺",
   "3555B",
   "3567K",
   "3643K",
   "3654K",
+  "3741B",
   "3744D",
-  "3744D_大道寺",
   "3842B",
-  "3842B_大道寺",
   "4677D",
-  "4677D_大道寺",
   "4973D",
   "5040D",
   "5172",
   "5272B",
   "5273",
+  "560",
   "567",
   "568B",
-  "568B_大道寺",
   "572",
   "573",
+  "580C",
   "581",
-  "581_浜園",
+  "585C",
   "587C",
   "591C",
-  "591C_大道寺",
   "592C",
-  "592C_大道寺",
-  "592C_浜園",
+  "599",
   "604A",
   "607A",
   "610A",
+  "660",
   "671",
+  "674",
   "676",
   "678B",
-  "678B_大道寺",
   "681D",
-  "681D_大道寺",
   "684CX",
   "685C",
   "698B",
-  "698B_大道寺",
   "713A",
   "766",
   "767",
@@ -308,19 +339,25 @@ const trains = [
   "777",
   "782C",
   "784C",
+  "785C",
   "786",
   "791C",
   "796K",
   "797B",
   "799B",
-  "799B_大道寺",
   "840",
   "841",
+  "870",
+  "872",
   "874",
   "875C",
+  "890C",
   "895C",
-  "895C_大道寺",
+  "898C",
+  "970",
+  "971",
   "975",
+  "999C",
   "回1076",
   "回1094",
   "回1107A",
@@ -333,17 +370,1834 @@ const trains = [
   "回1702A",
   "回1742",
   "回1750",
-  "回1750_大道寺",
   "回3973",
   "回469",
-  "回469_浜園",
   "回505A",
+  "回561",
   "回566",
   "回586",
   "回611A",
   "回625A",
+  "回675",
+  "回679",
+  "回696",
   "回862",
 ];
+
+const trainDetails = {
+  "回469": {
+    "type": "回送",
+    "start": "江ノ原車庫",
+    "dest": "館浜",
+    "time": "23分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "浜園から普通。折返:568B 急行 大手橋行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回561": {
+    "type": "回送",
+    "start": "駒野",
+    "dest": "館浜",
+    "time": "3分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:560 普通 新野崎行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "581": {
+    "type": "普通",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "22分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "浜園から準急。折返:580C 準急 大路行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": "有"
+  },
+  "567": {
+    "type": "普通",
+    "start": "日野森",
+    "dest": "館浜",
+    "time": "40分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "573": {
+    "type": "普通",
+    "start": "浜園上り本線",
+    "dest": "館浜",
+    "time": "15分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "599": {
+    "type": "普通",
+    "start": "江ノ原車庫",
+    "dest": "館浜",
+    "time": "23分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:698B 急行 大路行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "585C": {
+    "type": "準急",
+    "start": "赤山町",
+    "dest": "館浜",
+    "time": "35分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回505A": {
+    "type": "回送",
+    "start": "江ノ原車庫",
+    "dest": "館浜",
+    "time": "13分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:604A 特急(B特) 大手橋行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "591C": {
+    "type": "準急",
+    "start": "赤山町",
+    "dest": "館浜",
+    "time": "42分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "587C": {
+    "type": "準急",
+    "start": "大道寺",
+    "dest": "館浜",
+    "time": "18分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "3555B": {
+    "type": "急行",
+    "start": "江ノ原車庫",
+    "dest": "館浜",
+    "time": "17分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:3654K 快急 大手橋行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "611A": {
+    "type": "回送",
+    "start": "江ノ原車庫",
+    "dest": "館浜",
+    "time": "15分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:610A 特急(B特) 大手橋行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "3567K": {
+    "type": "快急",
+    "start": "赤山町",
+    "dest": "館浜",
+    "time": "32分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回679": {
+    "type": "回送",
+    "start": "駒野",
+    "dest": "館浜",
+    "time": "4分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:678B 急行 大路行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "685C": {
+    "type": "準急",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "19分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:684CX 準急 大道寺行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回675": {
+    "type": "回送",
+    "start": "江ノ原車庫",
+    "dest": "館浜",
+    "time": "22分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "折返:674 普通 日野森行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "3545B": {
+    "type": "急行",
+    "start": "赤山町",
+    "dest": "館浜",
+    "time": "36分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "折返:3744D 区急 大手橋行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "671": {
+    "type": "普通",
+    "start": "江ノ原車庫",
+    "dest": "館浜",
+    "time": "23分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:770 普通 大道寺行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "3473": {
+    "type": "普通",
+    "start": "赤山町",
+    "dest": "館浜",
+    "time": "64分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回625A": {
+    "type": "回送",
+    "start": "江ノ原車庫",
+    "dest": "館浜",
+    "time": "28分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "607A": {
+    "type": "特急(B特)",
+    "start": "赤山町",
+    "dest": "館浜",
+    "time": "28分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "797B": {
+    "type": "急行",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "26分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:898C 準急 日野森行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "785C": {
+    "type": "準急",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "22分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:784C 準急 大道寺行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "681D": {
+    "type": "区急",
+    "start": "赤山町",
+    "dest": "館浜",
+    "time": "36分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "777": {
+    "type": "普通",
+    "start": "日野森",
+    "dest": "館浜",
+    "time": "49分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "大道寺にて連結。",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "767": {
+    "type": "普通",
+    "start": "新野崎引上線",
+    "dest": "館浜",
+    "time": "27分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "791C": {
+    "type": "準急",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "21分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:890C 準急 新野崎行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "799B": {
+    "type": "急行",
+    "start": "赤山町",
+    "dest": "館浜",
+    "time": "34分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:898C 準急 日野森行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "771": {
+    "type": "普通",
+    "start": "大道寺",
+    "dest": "館浜",
+    "time": "25分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:870 普通 新野崎行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "713A": {
+    "type": "特急(B特)",
+    "start": "赤山町",
+    "dest": "館浜",
+    "time": "24分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "3643K": {
+    "type": "快急",
+    "start": "赤山町",
+    "dest": "館浜",
+    "time": "33分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "折返:3842B 急行 新長野公園行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "841": {
+    "type": "普通",
+    "start": "日野森",
+    "dest": "江ノ原車庫",
+    "time": "15分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "971": {
+    "type": "普通",
+    "start": "新野崎引上線",
+    "dest": "館浜",
+    "time": "21分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:970 普通 江ノ原車庫行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "999C": {
+    "type": "準急",
+    "start": "日野森",
+    "dest": "館浜",
+    "time": "30分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "3741B": {
+    "type": "急行",
+    "start": "赤山町",
+    "dest": "江ノ原車庫",
+    "time": "30分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回3973": {
+    "type": "回送",
+    "start": "大道寺",
+    "dest": "江ノ原車庫",
+    "time": "2分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "895C": {
+    "type": "準急",
+    "start": "赤山町",
+    "dest": "浜園",
+    "time": "36分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "新野崎から回送",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1143": {
+    "type": "普通",
+    "start": "赤山町",
+    "dest": "江ノ原車庫",
+    "time": "21分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "ワンマン運転。折返:1242 普通 大路行き",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回1107A": {
+    "type": "回送",
+    "start": "駒野",
+    "dest": "館浜",
+    "time": "3分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:1206A 特急 大手橋行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1283C": {
+    "type": "準急",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "22分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "折返:1282C 準急 大道寺行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1145": {
+    "type": "普通",
+    "start": "赤山町",
+    "dest": "江ノ原車庫",
+    "time": "24分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "ワンマン運転。折返:1242 普通 大路行き",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1285C": {
+    "type": "準急",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "20分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:1284C 準急 大道寺行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1251": {
+    "type": "普通",
+    "start": "日野森",
+    "dest": "江ノ原車庫",
+    "time": "14分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "ワンマン運転。",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1267": {
+    "type": "普通",
+    "start": "新野崎引上線",
+    "dest": "館浜",
+    "time": "24分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1103A": {
+    "type": "特急(C特2)",
+    "start": "大道寺",
+    "dest": "館浜",
+    "time": "12分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:回1302A 回送 駒野行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1261": {
+    "type": "普通",
+    "start": "虹ケ浜",
+    "dest": "駒野",
+    "time": "6分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1215A": {
+    "type": "特急(C特1)",
+    "start": "赤山町",
+    "dest": "館浜",
+    "time": "24分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1367": {
+    "type": "普通",
+    "start": "新野崎引上線",
+    "dest": "館浜",
+    "time": "24分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:1466 普通 新野崎行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1325A": {
+    "type": "特急(C特1)",
+    "start": "赤山町",
+    "dest": "館浜",
+    "time": "26分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "浜園臨時停車。折返:回1424A 回送 駒野行き",
+    "oneman": "",
+    "hamazono": "有",
+    "typechange": ""
+  },
+  "1483C": {
+    "type": "準急",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "23分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "折返:1482C 準急 大道寺行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1461": {
+    "type": "普通",
+    "start": "新野崎引上線",
+    "dest": "館浜",
+    "time": "24分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回1415A": {
+    "type": "回送",
+    "start": "駒野",
+    "dest": "館浜",
+    "time": "3分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:1414A 特急 大手橋行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1485C": {
+    "type": "準急",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "19分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:1484C 準急 大道寺行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1465": {
+    "type": "普通",
+    "start": "新野崎引上線",
+    "dest": "館浜",
+    "time": "26分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1305A": {
+    "type": "特急(C特2)",
+    "start": "大道寺",
+    "dest": "館浜",
+    "time": "14分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "浜園臨時停車。",
+    "oneman": "",
+    "hamazono": "有",
+    "typechange": ""
+  },
+  "1499C": {
+    "type": "準急",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "20分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回1409A": {
+    "type": "回送",
+    "start": "駒野",
+    "dest": "館浜",
+    "time": "3分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1449": {
+    "type": "普通",
+    "start": "赤山町",
+    "dest": "江ノ原車庫",
+    "time": "24分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1541": {
+    "type": "普通",
+    "start": "赤山町",
+    "dest": "新野崎",
+    "time": "25分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "ワンマン運転。大道寺から回送。",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1675": {
+    "type": "普通",
+    "start": "新野崎引上線",
+    "dest": "館浜",
+    "time": "21分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1651": {
+    "type": "普通",
+    "start": "日野森",
+    "dest": "新野崎",
+    "time": "18分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "ワンマン運転。大道寺から回送",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1699C": {
+    "type": "準急",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "22分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1643": {
+    "type": "普通",
+    "start": "赤山町",
+    "dest": "新野崎",
+    "time": "36分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "ワンマン運転。大道寺から回送",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1649": {
+    "type": "普通",
+    "start": "赤山町",
+    "dest": "江ノ原車庫",
+    "time": "32分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1787C": {
+    "type": "準急",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "19分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1861": {
+    "type": "普通",
+    "start": "新野崎引上線",
+    "dest": "館浜",
+    "time": "26分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "折返:1860 普通 新野崎行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1865": {
+    "type": "普通",
+    "start": "新野崎引上線",
+    "dest": "館浜",
+    "time": "28分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1895B": {
+    "type": "急行",
+    "start": "江ノ原車庫",
+    "dest": "館浜",
+    "time": "16分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1883C": {
+    "type": "準急",
+    "start": "日野森",
+    "dest": "館浜",
+    "time": "32分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "2079": {
+    "type": "普通",
+    "start": "新野崎引上線",
+    "dest": "館浜",
+    "time": "23分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:2078 普通 新野崎行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "2091C": {
+    "type": "準急",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "24分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "2087C": {
+    "type": "準急",
+    "start": "大道寺引上線",
+    "dest": "館浜",
+    "time": "26分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:2186C 準急 大道寺行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "2075": {
+    "type": "普通",
+    "start": "新野崎引上線",
+    "dest": "館浜",
+    "time": "24分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "折返:2174 普通 新野崎行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "4973D": {
+    "type": "区急",
+    "start": "赤山町",
+    "dest": "新野崎",
+    "time": "22分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "折返:5172 普通 日野森行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "5273": {
+    "type": "普通",
+    "start": "日野森",
+    "dest": "大道寺",
+    "time": "10分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:5272B 急行 大手橋行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "592C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大手橋",
+    "time": "37分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "浜園から普通",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": "有"
+  },
+  "572": {
+    "type": "普通",
+    "start": "駒野留置線4番",
+    "dest": "浜園上り本線",
+    "time": "16分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:573 普通 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回566": {
+    "type": "回送",
+    "start": "大道寺",
+    "dest": "日野森",
+    "time": "7分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:567 普通 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "560": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "22分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "568B": {
+    "type": "急行",
+    "start": "館浜",
+    "dest": "赤山町",
+    "time": "36分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "580C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "赤山町",
+    "time": "33分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:681D 区急 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回586": {
+    "type": "回送",
+    "start": "江ノ原車庫10番",
+    "dest": "大道寺",
+    "time": "4分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:587C 準急 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "604A": {
+    "type": "特急(B特)",
+    "start": "館浜",
+    "dest": "赤山町",
+    "time": "22分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "698B": {
+    "type": "急行",
+    "start": "館浜",
+    "dest": "赤山町",
+    "time": "31分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:799B 急行 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "3654K": {
+    "type": "快急",
+    "start": "館浜",
+    "dest": "赤山町",
+    "time": "27分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "660": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "30分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "610A": {
+    "type": "特急(B特)",
+    "start": "館浜",
+    "dest": "赤山町",
+    "time": "22分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "678B": {
+    "type": "急行",
+    "start": "館浜",
+    "dest": "赤山町",
+    "time": "34分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "684CX": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "25分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "折返:785C 準急 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回696": {
+    "type": "回送",
+    "start": "江ノ原車庫10番",
+    "dest": "大道寺引上線",
+    "time": "10分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:797B 急行 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "674": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "日野森",
+    "time": "52分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "676": {
+    "type": "普通",
+    "start": "大道寺",
+    "dest": "日野森",
+    "time": "13分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "折返:777 普通 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "766": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "30分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "折返:767 普通 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "770": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "大道寺",
+    "time": "32分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "折返:771 普通 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "3744D": {
+    "type": "区急",
+    "start": "館浜",
+    "dest": "赤山町",
+    "time": "42分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "782C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "23分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "796K": {
+    "type": "快急",
+    "start": "館浜",
+    "dest": "赤山町",
+    "time": "36分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "784C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "27分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "786": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "江ノ原車庫",
+    "time": "32分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "840": {
+    "type": "普通",
+    "start": "江ノ原車庫10番",
+    "dest": "日野森",
+    "time": "15分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:841 普通 大道寺行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "890C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "15分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "872": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "30分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "898C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "日野森",
+    "time": "31分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "折返:999C 準急 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "870": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "29分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "折返:971 普通 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "3842B": {
+    "type": "急行",
+    "start": "館浜",
+    "dest": "新長野公園",
+    "time": "32分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回862": {
+    "type": "回送",
+    "start": "館浜",
+    "dest": "江ノ原車庫",
+    "time": "26分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "970": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "江ノ原車庫",
+    "time": "28分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "982C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "27分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回1076": {
+    "type": "回送",
+    "start": "館浜",
+    "dest": "江ノ原車庫",
+    "time": "18分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1150": {
+    "type": "普通",
+    "start": "江ノ原車庫10番",
+    "dest": "日野森",
+    "time": "21分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "ワンマン運転。",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回1094": {
+    "type": "回送",
+    "start": "浜園",
+    "dest": "江ノ原車庫",
+    "time": "6分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1178": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "江ノ原車庫",
+    "time": "25分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "新野崎から回送",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1140": {
+    "type": "普通",
+    "start": "江ノ原車庫10番",
+    "dest": "赤山町",
+    "time": "21分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "ワンマン運転。",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1166": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "24分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "折返:1267 普通 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1250": {
+    "type": "普通",
+    "start": "江ノ原車庫10番",
+    "dest": "日野森",
+    "time": "15分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "ワンマン運転。折返:1251 普通 江ノ原車庫行き",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1206A": {
+    "type": "特急(C特2)",
+    "start": "館浜",
+    "dest": "大道寺",
+    "time": "11分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1260": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "22分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:1261 普通 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1242": {
+    "type": "普通",
+    "start": "江ノ原車庫10番",
+    "dest": "赤山町",
+    "time": "25分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "ワンマン運転。",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1282C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "23分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1212A": {
+    "type": "特急(C特1)",
+    "start": "館浜",
+    "dest": "赤山町",
+    "time": "22分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1284C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "21分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回1302A": {
+    "type": "回送",
+    "start": "館浜",
+    "dest": "駒野",
+    "time": "2分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1348": {
+    "type": "普通",
+    "start": "江ノ原車庫10番",
+    "dest": "赤山町",
+    "time": "25分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "折返:1449 普通 大道寺行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1364": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "26分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "折返:1465 普通 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1402A": {
+    "type": "特急(C特2)",
+    "start": "館浜",
+    "dest": "大道寺",
+    "time": "13分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "浜園臨時停車。",
+    "oneman": "",
+    "hamazono": "有",
+    "typechange": ""
+  },
+  "1498C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺",
+    "time": "20分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "折返:1499C 準急 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回1408A": {
+    "type": "回送",
+    "start": "館浜",
+    "dest": "駒野",
+    "time": "2分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:回1409A 回送 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1474": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "22分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1482C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "23分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1414A": {
+    "type": "特急(C特1)",
+    "start": "館浜",
+    "dest": "赤山町",
+    "time": "24分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "浜園臨時停車。",
+    "oneman": "",
+    "hamazono": "有",
+    "typechange": ""
+  },
+  "1466": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "22分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回1424A": {
+    "type": "回送",
+    "start": "館浜",
+    "dest": "駒野",
+    "time": "2分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1484C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "21分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1664": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "24分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回1640": {
+    "type": "回送",
+    "start": "新野崎",
+    "dest": "江ノ原車庫",
+    "time": "3分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "ワンマン運転。",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1690": {
+    "type": "普通",
+    "start": "江ノ原車庫10番",
+    "dest": "赤山町",
+    "time": "21分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回1750": {
+    "type": "回送",
+    "start": "新野崎",
+    "dest": "赤山町",
+    "time": "20分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "ワンマン運転。大道寺から普通。",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": "有"
+  },
+  "1782C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "日野森",
+    "time": "32分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "折返:1883C 準急 館浜行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回1702A": {
+    "type": "回送",
+    "start": "館浜",
+    "dest": "江ノ原車庫",
+    "time": "25分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "回1742": {
+    "type": "回送",
+    "start": "新野崎",
+    "dest": "江ノ原車庫",
+    "time": "3分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "ワンマン運転。",
+    "oneman": "有",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1774": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "25分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1798C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "22分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1860": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "29分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "1890C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "26分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "2084C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "25分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "2078": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "23分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "5040D": {
+    "type": "区急",
+    "start": "江ノ原車庫10番",
+    "dest": "赤山町",
+    "time": "27分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "2186C": {
+    "type": "準急",
+    "start": "館浜",
+    "dest": "大道寺引上線",
+    "time": "27分",
+    "irekae": "有",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "2174": {
+    "type": "普通",
+    "start": "館浜",
+    "dest": "新野崎引上線",
+    "time": "24分",
+    "irekae": "有",
+    "taihi": "有",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "5172": {
+    "type": "普通",
+    "start": "新野崎",
+    "dest": "日野森",
+    "time": "16分",
+    "irekae": "無",
+    "taihi": "有",
+    "note": "折返:5273 普通 大道寺行き",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  },
+  "5272B": {
+    "type": "急行",
+    "start": "大道寺",
+    "dest": "赤山町",
+    "time": "19分",
+    "irekae": "無",
+    "taihi": "無",
+    "note": "",
+    "oneman": "",
+    "hamazono": "",
+    "typechange": ""
+  }
+};
 
 function getDirection(trainNo) {
   // 回、アルファベット、_以降を除去して数字だけにする
@@ -357,11 +2211,43 @@ function getDirection(trainNo) {
 }
 
 function generate() {
+  // 先に列車を選択（フィルタ適用）
+  const filterIrekae = document.getElementById("filterIrekae").checked;
+  const filterTaihi = document.getElementById("filterTaihi").checked;
+  const filterOneman = document.getElementById("filterOneman").checked;
+  const filterNext = document.getElementById("filterNext").checked;
+  const filterTypeChange = document.getElementById("filterTypeChange").checked;
+  const filterHamazono = document.getElementById("filterHamazono").checked;
+  const enabledTypes = Array.from(document.querySelectorAll(".type-filter:checked")).map(el => el.value);
+
+  const anyFilter = filterIrekae || filterTaihi || filterOneman || filterNext || filterTypeChange || filterHamazono || enabledTypes.length < 9;
+
+  let candidates = trains.filter(t => {
+    const d = trainDetails[t];
+    // フィルタが有効なのに詳細がない列車は除外
+    if (!d) return !anyFilter;
+
+    if (filterIrekae && d.irekae !== "有") return false;
+    if (filterTaihi && d.taihi !== "有") return false;
+    if (filterOneman && d.oneman !== "有") return false;
+    if (filterNext && !(d.note && d.note.includes("折返"))) return false;
+    if (filterTypeChange && d.typechange !== "有") return false;
+    if (filterHamazono && d.hamazono !== "有") return false;
+    if (enabledTypes.length > 0 && !enabledTypes.includes(d.type)) return false;
+    return true;
+  });
+
+  if (candidates.length === 0) candidates = trains;
+  const train = candidates[Math.floor(Math.random() * candidates.length)];
+
+  // 777は最大4両
+  const maxCars = (train === "777") ? 4 : 6;
+
   let formation = [];
   let total = 0;
-  let remaining = 6;
+  let remaining = maxCars;
 
-  while (total < 6) {
+  while (total < maxCars) {
     if (total >= 2 && Math.random() < 0.25) break;
 
     let attempts = 0;
@@ -386,13 +2272,39 @@ function generate() {
   }
 
   const weather = weathers[Math.floor(Math.random() * weathers.length)];
-  const train = trains[Math.floor(Math.random() * trains.length)];
+  // train is already selected above
   const dir = getDirection(train);
 
-  const duty = Math.random() < 0.5 ? "車掌" : "運転";
+  const allowDriver = document.getElementById("filterDutyDriver").checked;
+  const allowConductor = document.getElementById("filterDutyConductor").checked;
+  let dutyOptions = [];
+  if (allowDriver) dutyOptions.push("運転");
+  if (allowConductor) dutyOptions.push("車掌");
+  if (dutyOptions.length === 0) dutyOptions = ["運転", "車掌"];
+  const duty = dutyOptions[Math.floor(Math.random() * dutyOptions.length)];
+
+  let detailHtml = "";
+  const detail = trainDetails[train];
+  if (detail) {
+    detailHtml = `
+      <div>${detail.type} ${detail.start}→${detail.dest}</div>
+      <div>運転時間:${detail.time}</div>
+    `;
+    if (detail.note) {
+      let noteText = detail.note;
+      if (noteText.includes("折返:")) {
+        noteText = noteText.replace(/。折返:/g, "。<br>折返:").replace(/折返:/g, "<br>折返:");
+        noteText = noteText.replace(/^<br>/, "");
+        noteText += "（実装済み）";
+      }
+      detailHtml += `<div>備考:${noteText}</div>`;
+    }
+    detailHtml += `<div>入換:${detail.irekae} / 退避:${detail.taihi}</div>`;
+  }
 
   document.getElementById("result").innerHTML = `
     <div>列番:${train}(${dir})</div>
+    ${detailHtml}
     <div>編成:${formation.join("+")}</div>
     <div>天候:${weather}</div>
     <div>乗務内容:${duty}</div>
